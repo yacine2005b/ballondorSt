@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || 'Voting App' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-white shadow mb-6">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="/" class="text-xl font-bold text-blue-600">🏆 Ballon d'Or Vote</a>
+      <div class="space-x-4">
+        <% if (currentUser) { %>
+          <a href="/" class="text-gray-700 hover:text-blue-600">Vote</a>
+          <a href="/leaderboard" class="text-gray-700 hover:text-blue-600">Leaderboard</a>
+          <a href="/logout" class="text-red-500 hover:underline">Logout</a>
+        <% } else { %>
+          <a href="/login" class="text-gray-700 hover:text-blue-600">Login</a>
+          <a href="/register" class="text-gray-700 hover:text-blue-600">Register</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page content -->
+  <main class="max-w-4xl mx-auto px-4">
+    <%- body %>
+  </main>
+</body>
+</html>
+<script>
+  const links = document.querySelectorAll('nav a');
+  links.forEach(link => {
+    if (link.href === window.location.href) {
+      link.classList.add('text-blue-600', 'font-bold', 'underline');
+    }
+  });
+</script>

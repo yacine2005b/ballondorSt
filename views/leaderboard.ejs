@@ -1,0 +1,24 @@
+<div class="max-w-3xl mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">🏆 Leaderboard</h1>
+    <a href="/" class="text-blue-500 hover:underline text-sm">← Back to Vote</a>
+  </div>
+
+  <div class="bg-white p-6 rounded shadow">
+    <ol class="space-y-6">
+      <% leaderboard.forEach((item, index) => {
+           const playerObj = players.find(p => p.name === item.player);
+      %>
+        <li class="flex items-center space-x-6">
+          <span class="text-xl font-bold w-6"><%= index + 1 %>.</span>
+          <img src="<%= playerObj?.img || '/images/default.jpg' %>" alt="<%= item.player %>"
+               class="w-24 h-24 rounded-full object-cover border-2 border-gray-300" />
+          <div class="flex-1">
+            <p class="text-lg font-semibold"><%= item.player %></p>
+          </div>
+          <span class="text-blue-600 text-xl font-bold"><%= item.score %> pts</span>
+        </li>
+      <% }) %>
+    </ol>
+  </div>
+</div>

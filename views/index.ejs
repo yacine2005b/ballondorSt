@@ -1,0 +1,31 @@
+
+
+<div class="bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-6">Rank Your Top 3 Players</h2>
+
+  <% if (error) { %>
+    <p class="text-red-600 mb-4"><%= error %></p>
+  <% } %>
+
+  <form method="POST" action="/">
+    <div class="grid gap-4">
+      <% players.forEach(player => { %>
+        <div class="flex items-center gap-4 p-3 border rounded bg-gray-50">
+          <img src="<%= player.img %>" alt="<%= player.name %>" class="w-24 h-24 rounded-full object-cover" />
+          <span class="font-semibold flex-1"><%= player.name %></span>
+          <select name="<%= player.name %>" class="p-2 border rounded" required>
+            <option value="">Select rank</option>
+            <option value="first" <%= userVote?.first === player.name ? "selected" : "" %>>1st</option>
+            <option value="second" <%= userVote?.second === player.name ? "selected" : "" %>>2nd</option>
+            <option value="third" <%= userVote?.third === player.name ? "selected" : "" %>>3rd</option>
+            <option value="none" <%= ![userVote?.first, userVote?.second, userVote?.third].includes(player.name) ? "selected" : "" %>>None</option>
+          </select>
+        </div>
+      <% }) %>
+    </div>
+
+    <button type="submit" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+      Submit Vote
+    </button>
+  </form>
+</div>
