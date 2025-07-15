@@ -19,6 +19,8 @@ const players = [
   { name: "islam", img: process.env.IMG_ISLAM },
   { name: "souhail", img: process.env.IMG_SOUHAIL },
   { name: "moncef", img: process.env.IMG_MONCEF },
+    { name: "ahmed", img: process.env.IMG_AHMED },
+    { name: "Khaled", img: process.env.IMG_KHALED },
 ];
 
 // 🔐 Middleware to protect routes
@@ -112,6 +114,17 @@ router.get('/leaderboard', requireLogin, async (req, res) => {
     title: 'Leaderboard',
     leaderboard,
     players
+  });
+});
+
+router.get('/votes-summary', requireLogin, async (req, res) => {
+ 
+  const votes = await Vote.find().populate('user', 'email'); // populate user email only
+
+  res.render('votes-summary', {
+    title: 'Votes Summary',
+    votes,
+    currentUser: req.session.user,
   });
 });
 

@@ -1,0 +1,25 @@
+<div class="mt-4">
+<h1 class="text-2xl font-bold mb-4">Users and Their Votes</h1>
+
+<table class="min-w-full bg-white shadow rounded">
+  <thead>
+    <tr>
+      <th class="py-2 px-4 border-b text-left">User Email</th>
+      <th class="py-2 px-4 border-b text-left">1st Place</th>
+      <th class="py-2 px-4 border-b text-left">2nd Place</th>
+      <th class="py-2 px-4 border-b text-left">3rd Place</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% votes.forEach(vote => { %>
+      <tr class="hover:bg-gray-100">
+        <td class="py-2 px-4 border-b"><%= vote.user.email %></td>
+        <td class="py-2 px-4 border-b"><%= vote.first || '—' %></td>
+        <td class="py-2 px-4 border-b"><%= vote.second || '—' %></td>
+        <td class="py-2 px-4 border-b"><%= vote.third || '—' %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+</div>
