@@ -5,48 +5,98 @@ const bcrypt = require('bcryptjs');
 
 // GET register form
 router.get('/register', (req, res) => {
-  res.render('register', { error: null,title: 'Register' });
+  res.render('register', { title: 'Register', error: null });
 });
 
+// POST register
 router.post('/register', async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    let { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.render('register', { title: 'Register', error: 'Email and password are required.' });
+    // Basic validation
+    if (!email || !password) {
+      return res.render('register', {
+        title: 'Register',
+        error: 'Email and password are required.',
+      });
+    }
+
+    // Normalize input
+    email = email.trim().toLowerCase();
+
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.render('register', {
+        title: 'Register',
+        error: 'User already exists with that email.',
+      });
+    }
+
+    // Hash password and save
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
+
+    // Set session and redirect
+    req.session.user = { id: newUser._id, email: newUser.email };
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.render('register', {
+      title: 'Register',
+      error: 'Something went wrong. Please try again.',
+    });
   }
-
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.render('register', { title: 'Register', error: 'User already exists with that email.' });
-  }
-
-  const hashed = await bcrypt.hash(password, 10);
-  const newUser = new User({ email, password: hashed });
-  await newUser.save();
-
-  req.session.user = { id: newUser._id, email: newUser.email };
-  res.redirect('/');
 });
-
 
 // GET login form
 router.get('/login', (req, res) => {
-  res.render('login', { error: null ,title: 'Login' });
+  res.render('login', { title: 'Login', error: null });
 });
 
 // POST login
 router.post('/login', async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user || !(await user.comparePassword(req.body.password))) {
-    return res.render('login', { error: 'Invalid credentials' });
+  try {
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
+
+    if (!email || !password) {
+      return res.render('login', {
+        title: 'Login',
+        error: 'Email and password are required.',
+      });
+    }
+
+    const user = await User.findOne({ email });
+    const isMatch = user && (await bcrypt.compare(password, user.password));
+
+    if (!isMatch) {
+      return res.render('login', {
+        title: 'Login',
+        error: 'Invalid credentials.',
+      });
+    }
+
+    req.session.user = { id: user._id, email: user.email };
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.render('login', {
+      title: 'Login',
+      error: 'Something went wrong. Please try again.',
+    });
   }
-  req.session.user = { id: user._id, email: user.email };
-  res.redirect('/');
 });
 
 // GET logout
 router.get('/logout', (req, res) => {
-  req.session.destroy(() => res.redirect('/login'));
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    res.redirect('/login');
+  });
 });
 
 module.exports = router;
