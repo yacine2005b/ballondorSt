@@ -1,25 +1,34 @@
-<div class="mt-4">
-<h1 class="text-2xl font-bold mb-4">Users and Their Votes</h1>
+<% if (currentUser && currentUser.email === 'yacine@gmail.com') { %>
+<div class="mt-10 max-w-4xl mx-auto font-sans text-white">
+  <h1 class="text-3xl font-extrabold text-yellow-400 mb-6 text-center tracking-wider uppercase">
+    🗳️ User Votes Overview
+  </h1>
 
-<table class="min-w-full bg-white shadow rounded">
-  <thead>
-    <tr>
-      <th class="py-2 px-4 border-b text-left">User Email</th>
-      <th class="py-2 px-4 border-b text-left">1st Place</th>
-      <th class="py-2 px-4 border-b text-left">2nd Place</th>
-      <th class="py-2 px-4 border-b text-left">3rd Place</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% votes.forEach(vote => { %>
-      <tr class="hover:bg-gray-100">
-        <td class="py-2 px-4 border-b"><%= vote.user.email %></td>
-        <td class="py-2 px-4 border-b"><%= vote.first || '—' %></td>
-        <td class="py-2 px-4 border-b"><%= vote.second || '—' %></td>
-        <td class="py-2 px-4 border-b"><%= vote.third || '—' %></td>
-      </tr>
-    <% }) %>
-  </tbody>
-</table>
-
+  <div class="overflow-x-auto bg-black bg-opacity-80 p-6 rounded-xl shadow-lg border border-yellow-500">
+    <table class="min-w-full text-left text-sm">
+      <thead>
+        <tr class="text-yellow-300 border-b border-yellow-500">
+          <th class="py-3 px-4">User Email</th>
+          <th class="py-3 px-4">🥇 1st Place</th>
+          <th class="py-3 px-4">🥈 2nd Place</th>
+          <th class="py-3 px-4">🥉 3rd Place</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% votes.forEach(vote => { %>
+          <tr class="hover:bg-gray-800 border-b border-gray-700">
+            <td class="py-3 px-4 text-yellow-100"><%= vote.user.email %></td>
+            <td class="py-3 px-4 text-white"><%= vote.first || '—' %></td>
+            <td class="py-3 px-4 text-white"><%= vote.second || '—' %></td>
+            <td class="py-3 px-4 text-white"><%= vote.third || '—' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 </div>
+<% } else { %>
+  <div class="text-center mt-20 text-2xl text-red-500 font-bold">
+    Access Denied
+  </div>
+<% } %>

@@ -36,24 +36,17 @@ router.get('/login', (req, res) => {
 
 // POST login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.render('login', { title: 'Login', error: 'Email and password are required.' });
+  const user = await User.findOne({ email: req.body.email });
+  if (!user || !(await user.comparePassword(req.body.password))) {
+    return res.render('login', { error: 'Invalid credentials' });
   }
-
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.render('login', { title: 'Login', error: 'Invalid credentials.' });
-  }
-
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return res.render('login', { title: 'Login', error: 'Invalid credentials.' });
-  }
-
   req.session.user = { id: user._id, email: user.email };
   res.redirect('/');
+});
+
+// GET logout
+router.get('/logout', (req, res) => {
+  req.session.destroy(() => res.redirect('/login'));
 });
 
 module.exports = router;

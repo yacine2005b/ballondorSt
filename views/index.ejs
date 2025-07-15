@@ -1,31 +1,56 @@
-
-
-<div class="bg-white p-6 rounded shadow mt-4">
-  <h2 class="text-2xl font-bold mb-6">Rank Your Top 3 Players</h2>
+<div class="bg-gradient-to-b from-black to-gray-900 p-8 rounded shadow-lg mt-4 text-white font-sans">
+  <h2 class="text-4xl font-bold text-center text-yellow-400 mb-10 tracking-widest uppercase">Ballon d'Or - Rank Top 3</h2>
 
   <% if (error) { %>
-    <p class="text-red-600 mb-4"><%= error %></p>
+    <p class="text-red-500 mb-4 text-center"><%= error %></p>
   <% } %>
 
   <form method="POST" action="/">
-    <div class="grid gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       <% players.forEach(player => { %>
-        <div class="flex items-center gap-4 p-3 border rounded bg-gray-50">
-          <img src="<%= player.img %>" alt="<%= player.name %>" class="w-24 h-24 rounded-full object-cover" />
-          <span class="font-semibold flex-1"><%= player.name %></span>
-          <select name="<%= player.name %>" class="p-2 border rounded" required>
+        <div class="bg-black border border-yellow-500 rounded-lg p-4 shadow-lg hover:scale-105 transition-transform duration-300">
+          <img src="<%= player.img %>" alt="<%= player.name %>" class="w-full h-52 object-cover rounded-t mb-4 border-b border-yellow-500" />
+          <h3 class="text-center text-xl font-semibold text-yellow-300 mb-3 tracking-wide"><%= player.name %></h3>
+          <select name="<%= player.name %>" class="rank-select w-full border-2 border-yellow-400 bg-black text-white p-2 rounded focus:outline-none">
             <option value="">Select rank</option>
-            <option value="first" <%= userVote?.first === player.name ? "selected" : "" %>>1st</option>
-            <option value="second" <%= userVote?.second === player.name ? "selected" : "" %>>2nd</option>
-            <option value="third" <%= userVote?.third === player.name ? "selected" : "" %>>3rd</option>
-            <option value="none" <%= ![userVote?.first, userVote?.second, userVote?.third].includes(player.name) ? "selected" : "" %>>None</option>
+            <option value="first">1st 🥇</option>
+            <option value="second">2nd 🥈</option>
+            <option value="third">3rd 🥉</option>
+            <option value="none">None</option>
           </select>
         </div>
       <% }) %>
     </div>
 
-    <button type="submit" class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
-      Submit Vote
-    </button>
+    <div class="text-center mt-8">
+      <button type="submit" class="px-6 py-3 bg-yellow-500 text-black text-lg font-bold rounded shadow-md hover:bg-yellow-400 transition-all duration-300">
+        Submit Rankings
+      </button>
+    </div>
   </form>
 </div>
+
+<script>
+  const selects = document.querySelectorAll('.rank-select');
+
+  function updateOptions() {
+    const selectedRanks = Array.from(selects)
+      .map(select => select.value)
+      .filter(val => ['first', 'second', 'third'].includes(val));
+
+    selects.forEach(select => {
+      const current = select.value;
+      select.querySelectorAll('option').forEach(option => {
+        if (['first', 'second', 'third'].includes(option.value)) {
+          option.disabled = selectedRanks.includes(option.value) && option.value !== current;
+        }
+      });
+    });
+  }
+
+  selects.forEach(select => {
+    select.addEventListener('change', updateOptions);
+  });
+
+  updateOptions(); // Initial setup
+</script>

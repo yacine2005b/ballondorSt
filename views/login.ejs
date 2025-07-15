@@ -1,17 +1,14 @@
+<div class="max-w-md mx-auto bg-black bg-opacity-80 p-8 rounded-xl shadow-lg border border-yellow-500 text-white font-sans">
+  <h2 class="text-3xl font-extrabold text-yellow-400 text-center mb-6 tracking-wide uppercase">Login to Vote</h2>
 
-
-<div class="max-w-md mx-auto bg-white p-6 rounded shadow">
-  <h2 class="text-2xl font-bold mb-4">Login</h2>
-
-
-  <form method="POST" action="/login" class="space-y-4">
+  <form method="POST" action="/login" class="space-y-5">
     <div>
       <input
         name="email"
         type="email"
         placeholder="Email"
         required
-        class="w-full p-2 border rounded"
+        class="w-full p-3 rounded-lg bg-gray-900 border-2 border-yellow-400 text-white placeholder-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
       />
     </div>
 
@@ -21,24 +18,24 @@
         type="password"
         placeholder="Password"
         required
-        class="w-full p-2 border rounded"
+        class="w-full p-3 rounded-lg bg-gray-900 border-2 border-yellow-400 text-white placeholder-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
       />
     </div>
-    <% if (error) { %>
-  <p class="text-red-500 mb-2"><%= error %></p>
-<% } %>
 
+    <% if (error) { %>
+      <p class="text-red-500 text-sm text-center"><%= error %></p>
+    <% } %>
 
     <button
       type="submit"
-      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full"
+      class="w-full py-3 px-4 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg shadow-md transition-all duration-300"
     >
       Login
     </button>
   </form>
 
-  <p class="mt-4 text-sm">
+  <p class="mt-6 text-center text-sm text-yellow-200">
     Don't have an account?
-    <a href="/register" class="text-blue-500 hover:underline">Register here</a>
+    <a href="/register" class="text-yellow-400 hover:underline font-semibold">Register here</a>
   </p>
 </div>

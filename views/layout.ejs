@@ -6,54 +6,60 @@
   <title><%= title || 'Voting App' %></title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans min-h-screen">
-<nav class="bg-white shadow">
-  <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
-    <!-- Logo -->
-    <a href="/" class="text-2xl font-bold text-blue-600">🏆ST Ballon d'Or Vote</a>
+<body class="bg-gradient-to-b from-black to-gray-900 text-white font-sans min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="bg-black bg-opacity-90 border-b border-yellow-500 shadow-lg">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <!-- Logo -->
+      <a href="/" class="text-2xl font-extrabold text-yellow-400 hover:underline tracking-wide">🏆 ST Ballon d'Or Vote</a>
 
-    <!-- Hamburger Button (mobile only) -->
-    <button id="menu-btn" class="lg:hidden text-gray-600 focus:outline-none">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
+      <!-- Hamburger Button (mobile) -->
+      <button id="menu-btn" class="lg:hidden text-yellow-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
 
-    <!-- Nav Links -->
-    <div id="nav-links" class="hidden lg:flex space-x-8 text-lg font-medium text-gray-700">
-      <% if (currentUser) { %>
-        <a href="/" class="hover:text-blue-600 transition">Vote</a>
-        <a href="/leaderboard" class="hover:text-blue-600 transition">Leaderboard</a>
-         <a href="/votes-summary" class="text-gray-700 hover:text-blue-600">Users Votes</a>
-        <a href="/logout" class="text-red-600 hover:underline transition">Logout</a>
-      <% } else { %>
-        <a href="/login" class="hover:text-blue-600 transition">Login</a>
-        <a href="/register" class="hover:text-blue-600 transition">Register</a>
-      <% } %>
+      <!-- Desktop Nav -->
+      <div id="nav-links" class="hidden lg:flex space-x-8 text-lg font-semibold text-yellow-300">
+        <% if (currentUser) { %>
+          <a href="/" class="hover:text-yellow-400 transition">Vote</a>
+          <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
+          <% if (currentUser && currentUser.email === 'yacine@gmail.com') { %>
+          <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
+          <% } %>
+          <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
+        <% } else { %>
+          <a href="/login" class="hover:text-yellow-400 transition">Login</a>
+          <a href="/register" class="hover:text-yellow-400 transition">Register</a>
+        <% } %>
+      </div>
     </div>
-  </div>
 
-  <!-- Mobile menu: vertical list -->
-  <div id="mobile-menu" class="hidden bg-white border-t border-gray-200 lg:hidden">
-    <div class="flex flex-col px-4 py-3 space-y-2 text-gray-700 font-medium">
-      <% if (currentUser) { %>
-        <a href="/" class="hover:text-blue-600 transition">Vote</a>
-        <a href="/leaderboard" class="hover:text-blue-600 transition">Leaderboard</a>
-          <a href="/votes-summary" class="text-gray-700 hover:text-blue-600">Users Votes</a>
-        <a href="/logout" class="text-red-600 hover:underline transition">Logout</a>
-      <% } else { %>
-        <a href="/login" class="hover:text-blue-600 transition">Login</a>
-        <a href="/register" class="hover:text-blue-600 transition">Register</a>
-      <% } %>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden bg-black bg-opacity-95 border-t border-yellow-500 lg:hidden">
+      <div class="flex flex-col px-4 py-4 space-y-2 text-yellow-300 font-semibold">
+        <% if (currentUser) { %>
+          <a href="/" class="hover:text-yellow-400 transition">Vote</a>
+          <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
+          <% if (currentUser && currentUser.email === 'yacine@gmail.com') { %>
+          <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
+          <% } %>
+          <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
+        <% } else { %>
+          <a href="/login" class="hover:text-yellow-400 transition">Login</a>
+          <a href="/register" class="hover:text-yellow-400 transition">Register</a>
+        <% } %>
+      </div>
     </div>
-  </div>
-</nav>
-  <!-- Page content -->
-  <main class="max-w-4xl mx-auto px-4">
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 py-10">
     <%- body %>
   </main>
-</body>
-</html>
+
+  <!-- Scripts -->
 <script>
   const menuBtn = document.getElementById('menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -62,12 +68,15 @@
     mobileMenu.classList.toggle('hidden');
   });
 
-  // Highlight current page in both menus
+
   const highlightLinks = (container) => {
     const links = container.querySelectorAll('a');
+    const currentPath = window.location.pathname.replace(/\/$/, '');
+
     links.forEach(link => {
-      if (link.href === window.location.href) {
-        link.classList.add('text-blue-600', 'font-bold', 'underline');
+      const linkPath = new URL(link.href).pathname.replace(/\/$/, '');
+      if (linkPath === currentPath) {
+        link.classList.add('text-yellow-400', 'underline', 'font-bold');
       }
     });
   };
@@ -75,3 +84,6 @@
   highlightLinks(document.getElementById('nav-links'));
   highlightLinks(document.getElementById('mobile-menu'));
 </script>
+
+</body>
+</html>
