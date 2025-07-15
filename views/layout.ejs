@@ -25,8 +25,9 @@
         <% if (currentUser) { %>
           <a href="/" class="hover:text-yellow-400 transition">Vote</a>
           <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
-          <% if (currentUser && currentUser.email === 'yacine@gmail.com') { %>
+          <% if ( currentUser.email === 'yacine@gmail.com') { %>
           <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
+          <a href="/users" class="hover:text-yellow-400 transition">Users</a>
           <% } %>
           <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
         <% } else { %>
@@ -42,8 +43,9 @@
         <% if (currentUser) { %>
           <a href="/" class="hover:text-yellow-400 transition">Vote</a>
           <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
-          <% if (currentUser && currentUser.email === 'yacine@gmail.com') { %>
+          <% if ( currentUser.email === 'yacine@gmail.com') { %>
           <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
+           <a href="/users" class="hover:text-yellow-400 transition">Users</a>
           <% } %>
           <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
         <% } else { %>

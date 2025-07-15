@@ -2,15 +2,16 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
-  password: String
+  email: { type: String, unique: true, lowercase: true, trim: true, required: true },
+  password: { type: String, required: true }
 });
 
-// Hash password before save
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+// Delete votes when a user is removed
+userSchema.post('findOneAndDelete', async function(doc) {
+  if (doc) {
+    const Vote = require('../models/vote');
+    await Vote.deleteMany({ user: doc._id });
+  }
 });
 
 userSchema.methods.comparePassword = function(password) {

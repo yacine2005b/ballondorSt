@@ -11,7 +11,9 @@ router.get('/register', (req, res) => {
 // POST register
 router.post('/register', async (req, res) => {
   try {
-    let { email, password } = req.body;
+    let email = req.body.email?.trim().toLowerCase();
+let password = req.body.password;
+
 
     // Basic validation
     if (!email || !password) {
@@ -21,8 +23,7 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Normalize input
-    email = email.trim().toLowerCase();
+
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -69,12 +70,20 @@ router.post('/login', async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    const isMatch = user && (await bcrypt.compare(password, user.password));
-
-    if (!isMatch) {
+    if (!user) {
+      // User not found
       return res.render('login', {
         title: 'Login',
-        error: 'Invalid credentials.',
+        error: 'No account found with this email.',
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      // Password does not match
+      return res.render('login', {
+        title: 'Login',
+        error: 'Incorrect password.',
       });
     }
 
@@ -98,5 +107,31 @@ router.get('/logout', (req, res) => {
     res.redirect('/login');
   });
 });
+router.get('/users', async (req, res) => {
+  try {
+    // Optionally, restrict this route to admin users only
+    if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
+      return res.status(403).send('Access denied');
+    }
+    const users = await User.find({}, 'email _id');
+    res.render('users', { title: 'All Users', users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error fetching users');
+  }
+});
 
+// Delete user by ID (admin only)
+router.post('/delete-user/:id', async (req, res) => {
+  try {
+    if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
+      return res.status(403).send('Access denied');
+    }
+    await User.findByIdAndDelete(req.params.id);
+    res.redirect('/users');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error deleting user');
+  }
+});
 module.exports = router;

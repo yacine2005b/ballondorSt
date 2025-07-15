@@ -1,0 +1,25 @@
+<!-- filepath: c:\Users\HP\Desktop\laformatik\ballondorSt\views\users-list.ejs -->
+<div class="max-w-xl mx-auto mt-10 bg-black bg-opacity-80 p-8 rounded-xl shadow-lg border border-yellow-500 text-white font-sans">
+  <h2 class="text-2xl font-bold text-yellow-400 mb-6 text-center uppercase">All Users</h2>
+  <table class="min-w-full text-left text-sm mb-6">
+    <thead>
+      <tr class="text-yellow-300 border-b border-yellow-500">
+        <th class="py-3 px-4">Email</th>
+        <th class="py-3 px-4">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr class="border-b border-gray-700">
+          <td class="py-3 px-4"><%= user.email %></td>
+          <td class="py-3 px-4">
+            <form method="POST" action="/delete-user/<%= user._id %>" onsubmit="return confirm('Delete this user?');">
+              <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <a href="/" class="text-yellow-400 hover:underline">Back to Home</a>
+</div>
