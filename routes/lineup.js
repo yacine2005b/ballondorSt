@@ -39,7 +39,14 @@ router.get('/', requireLogin, (req, res) => {
 });
 
 // POST INEUP
+
 router.post('/', requireLogin, async (req, res) => {
+  let lineup = await Lineup.findOne({ user: req.session.user.id });
+
+  if (!lineup) {
+    lineup = new Lineup({ user: req.session.user.id });
+  }
+
   const { formation } = req.body;
   const slots = formations[formation];
 
@@ -81,11 +88,13 @@ router.post('/', requireLogin, async (req, res) => {
     });
   }
 
-  await Lineup.findOneAndUpdate(
-    { user: req.session.user.id },
-    { formation, players: assigned },
-    { upsert: true }
-  );
+  lineup.formation = formation;
+  lineup.players = assigned;
+
+  // Delete all comments for this lineup
+  lineup.comments = [];
+
+  await lineup.save();
 
   res.redirect('/lineup/summary');
 });
@@ -129,13 +138,30 @@ router.get('/all', async (req, res) => {
   try {
     const lineups = await Lineup.find({})
       .populate('user', 'email')
-      .populate('comments.user', 'email') 
+      .populate('comments.user', 'email')
       .sort({ _id: -1 });
 
-    res.render('lineup/all', { lineups, formations, allPlayers: players, currentUser: req.session.user });
+    // Move current user's lineup to the front
+    let userLineupIndex = -1;
+    if (req.session.user) {
+      userLineupIndex = lineups.findIndex(l => l.user && l.user._id.toString() === req.session.user.id);
+      if (userLineupIndex > -1) {
+        const [userLineup] = lineups.splice(userLineupIndex, 1);
+        lineups.unshift(userLineup);
+      }
+    }
+
+    res.render('lineup/all', {
+      lineups,
+      formations,
+      allPlayers: players,
+      currentUser: req.session.user,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
   }
 });
+
+
 module.exports = router;
