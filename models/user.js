@@ -1,20 +1,27 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true, trim: true, required: true },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String },
 });
 
-// Delete votes when a user is removed
-userSchema.post('findOneAndDelete', async function(doc) {
+// Cascade delete related data (votes + lineups)
+userSchema.post('findOneAndDelete', async function (doc) {
   if (doc) {
     const Vote = require('../models/vote');
+    const Lineup = require('../models/lineup');
+
     await Vote.deleteMany({ user: doc._id });
+    await Lineup.deleteMany({ user: doc._id });
   }
 });
 
-userSchema.methods.comparePassword = function(password) {
+// Password comparison helper
+userSchema.methods.comparePassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 

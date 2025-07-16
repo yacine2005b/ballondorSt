@@ -13,12 +13,14 @@
     "@tailwindcss/vite": "^4.1.11",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
+    "connect-flash": "^0.1.1",
     "dotenv": "^17.2.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
-    "mongoose": "^8.16.3"
+    "mongoose": "^8.16.3",
+    "nodemailer": "^7.0.5"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",

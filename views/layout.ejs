@@ -24,11 +24,17 @@
       <div id="nav-links" class="hidden lg:flex space-x-8 text-lg font-semibold text-yellow-300">
         <% if (currentUser) { %>
           <a href="/" class="hover:text-yellow-400 transition">Vote</a>
-          <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
-          <% if ( currentUser.email === 'yacine@gmail.com') { %>
+         <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
+<a href="/lineup" class="hover:text-yellow-400 transition">Lineup</a>
+<a href="/lineup/all" class="hover:text-yellow-400 transition">All Lineups</a>
+          <% if ( currentUser.email === 'ybouziane144@gmail.com' ||currentUser.email === 'raoufammari213@gmail.com' ) { %>
           <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
-          <a href="/users" class="hover:text-yellow-400 transition">Users</a>
+      
           <% } %>
+           <% if ( currentUser.email === 'ybouziane144@gmail.com'  ) { %>
+             <a href="/users" class="hover:text-yellow-400 transition">Users</a>
+              <% } %>
+             
           <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
         <% } else { %>
           <a href="/login" class="hover:text-yellow-400 transition">Login</a>
@@ -42,11 +48,17 @@
       <div class="flex flex-col px-4 py-4 space-y-2 text-yellow-300 font-semibold">
         <% if (currentUser) { %>
           <a href="/" class="hover:text-yellow-400 transition">Vote</a>
-          <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
-          <% if ( currentUser.email === 'yacine@gmail.com') { %>
+         <a href="/leaderboard" class="hover:text-yellow-400 transition">Leaderboard</a>
+         <a href="/lineup" class="hover:text-yellow-400 transition">Lineup</a>
+      <a href="/lineup/all" class="hover:text-yellow-400 transition">All Lineups</a>
+             <% if ( currentUser.email === 'ybouziane144@gmail.com' ||currentUser.email === 'raoufammari213@gmail.com' ) { %>
           <a href="/votes-summary" class="hover:text-yellow-400 transition">Users Votes</a>
-           <a href="/users" class="hover:text-yellow-400 transition">Users</a>
+      
           <% } %>
+           <% if ( currentUser.email === 'ybouziane144@gmail.com'  ) { %>
+             <a href="/users" class="hover:text-yellow-400 transition">Users</a>
+              <% } %>
+             
           <a href="/logout" class="text-red-400 hover:text-red-500 transition">Logout</a>
         <% } else { %>
           <a href="/login" class="hover:text-yellow-400 transition">Login</a>

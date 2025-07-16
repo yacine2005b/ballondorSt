@@ -1,0 +1,160 @@
+<form method="POST" action="/lineup" class="space-y-8 max-w-6xl mx-auto bg-black p-6 rounded-xl text-white shadow-2xl">
+  <h2 class="text-3xl text-yellow-400 text-center font-bold uppercase tracking-wider">Build Your Lineup</h2>
+
+  <!-- Formation Selector -->
+  <div>
+    <label for="formation" class="block mb-2 font-semibold text-yellow-200">Select Formation:</label>
+    <select name="formation" id="formation" required
+            class="w-full p-3 rounded-lg bg-gray-800 border border-yellow-400 text-white focus:outline-none focus:ring-2 focus:ring-yellow-400">
+      <option value="">-- Choose a Formation --</option>
+      <% for (let key in formations) { %>
+        <option value="<%= key %>"><%= key %></option>
+      <% } %>
+    </select>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="flex flex-col lg:flex-row gap-6 h-auto lg:h-[700px] overflow-hidden">
+
+    <!-- Player Pool -->
+<!-- Player Pool -->
+<div class="w-full lg:w-1/3 bg-gray-900 p-4 rounded-lg border border-gray-700 overflow-y-auto max-h-[400px] lg:max-h-full">
+  <h3 class="text-yellow-300 text-lg font-semibold mb-4">Available Players</h3>
+
+  <div id="player-pool" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 gap-4">
+    <% players.forEach(p => { %>
+      <div class="draggable-player bg-gray-800 border border-yellow-400 rounded-lg p-3 shadow cursor-pointer transition hover:scale-105 flex flex-col items-center text-center"
+           draggable="true"
+           data-name="<%= p.name %>">
+           
+        <img src="<%= p.img %>" alt="<%= p.name %>"
+             class="w-16 h-16 rounded-full object-cover border-2 border-yellow-300 mb-2" />
+             
+        <span class="text-sm font-medium text-yellow-100 break-words"><%= p.name %></span>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+
+    <!-- Beautiful Football Pitch -->
+    <div class="w-full lg:w-2/3 flex flex-col">
+      <h3 class="text-yellow-300 text-lg font-semibold mb-4">Click a Player, then Click a Position</h3>
+      <div id="formation-field"
+           class="grid grid-cols-3 grid-rows-4 gap-3 bg-gradient-to-b from-green-800 to-green-900 p-6 rounded-2xl border-2 border-yellow-500 shadow-inner flex-grow min-h-[400px] relative">
+        <!-- JS will insert drop zones here -->
+        <div class="absolute inset-0 rounded-2xl border-[3px] border-dashed border-yellow-500 pointer-events-none"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <% if (error) { %>
+    <p class="text-red-500 text-center font-semibold"><%= error %></p>
+  <% } %>
+
+  <button type="submit"
+          onclick="return prepareSubmission()"
+          class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold w-full py-3 rounded-lg shadow transition-all duration-300">
+    Submit Lineup
+  </button>
+</form>
+
+<!-- JS for Pitch Logic -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const formations = <%- JSON.stringify(formations) %>;
+    const players = <%- JSON.stringify(players) %>;
+
+    const formationSelect = document.getElementById('formation');
+    const field = document.getElementById('formation-field');
+    const playerPool = document.getElementById('player-pool');
+
+    let selectedPlayer = null;
+
+    function clearPlayerHighlights() {
+      document.querySelectorAll('.draggable-player').forEach(p => p.classList.remove('ring', 'ring-yellow-400'));
+    }
+
+    playerPool.addEventListener('click', e => {
+      const playerDiv = e.target.closest('.draggable-player');
+      if (!playerDiv) return;
+
+      selectedPlayer = players.find(p => p.name === playerDiv.dataset.name);
+      clearPlayerHighlights();
+      playerDiv.classList.add('ring', 'ring-yellow-400');
+    });
+
+    formationSelect.addEventListener('change', () => {
+      const selected = formationSelect.value;
+      const layout = formations[selected] || [];
+
+      field.innerHTML = '<div class="absolute inset-0 rounded-2xl border-[3px] border-dashed border-yellow-500 pointer-events-none"></div>';
+      selectedPlayer = null;
+      clearPlayerHighlights();
+
+      layout.forEach(slot => {
+        const div = document.createElement('div');
+        div.className =
+          'drop-zone relative bg-black/40 backdrop-blur-md rounded-xl border border-yellow-400 text-white flex flex-col items-center justify-center p-2 text-center shadow-lg hover:bg-black/50 transition-all';
+        div.style.gridRowStart = slot.row;
+        div.style.gridColumnStart = slot.col;
+        div.dataset.slot = slot.position;
+
+        div.addEventListener('click', () => {
+          if (!selectedPlayer) return;
+
+          const assignedAlready = Array.from(document.querySelectorAll('.drop-zone'))
+            .some(zone => zone.dataset.assigned === selectedPlayer.name);
+          if (assignedAlready) return;
+
+          div.innerHTML = '';
+          div.dataset.assigned = selectedPlayer.name;
+
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex flex-col items-center';
+
+          const label = document.createElement('span');
+          label.className = 'text-[11px] font-semibold text-yellow-300 mb-1';
+          label.textContent = div.dataset.slot;
+
+          const img = document.createElement('img');
+          img.src = selectedPlayer.img;
+          img.alt = selectedPlayer.name;
+          img.className = 'w-12 h-12 rounded-full object-cover border border-yellow-400';
+
+          const name = document.createElement('span');
+          name.className = 'text-xs mt-1 font-medium';
+          name.textContent = selectedPlayer.name;
+
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = slot.position;
+          input.value = selectedPlayer.name;
+
+          wrapper.appendChild(label);
+          wrapper.appendChild(img);
+          wrapper.appendChild(name);
+          div.appendChild(wrapper);
+          div.appendChild(input);
+
+          selectedPlayer = null;
+          clearPlayerHighlights();
+        });
+
+        div.textContent = slot.position;
+        field.appendChild(div);
+      });
+    });
+
+    window.prepareSubmission = function () {
+      const allSlots = document.querySelectorAll('.drop-zone');
+      const filled = Array.from(allSlots).filter(zone => zone.dataset.assigned);
+      if (filled.length !== allSlots.length) {
+        alert('Please assign a player to every slot before submitting.');
+        return false;
+      }
+      return true;
+    };
+  });
+</script>

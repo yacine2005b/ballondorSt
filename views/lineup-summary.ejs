@@ -1,0 +1,21 @@
+<div class="w-full max-w-3xl mx-auto bg-gradient-to-b from-green-900 to-green-800 rounded-lg border border-yellow-500 p-6 shadow-xl">
+  <h2 class="text-yellow-400 text-2xl text-center mb-6 uppercase font-bold tracking-wide"><%= formation %> Formation</h2>
+
+  <div class="grid grid-rows-4 grid-cols-3 gap-6 min-h-[400px]">
+    <% positions.forEach(pos => { 
+         const playerName = playerMap[pos.position];
+         const player = players.find(p => p.name === playerName);
+    %>
+      <div class="bg-black/50 backdrop-blur-md p-2 rounded-lg border border-yellow-400 flex flex-col items-center justify-center text-white"
+           style="grid-row-start:<%= pos.row %>; grid-column-start:<%= pos.col %>">
+        <div class="text-xs font-semibold text-yellow-200 mb-1"><%= pos.position %></div>
+        <% if (player) { %>
+          <img src="<%= player.img %>" alt="<%= player.name %>" class="w-14 h-14 rounded-full object-cover border border-yellow-300 mb-1" />
+          <span class="text-sm font-medium text-center"><%= player.name %></span>
+        <% } else { %>
+          <span class="text-sm text-red-400">No player</span>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+</div>

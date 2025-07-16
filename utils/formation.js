@@ -1,0 +1,50 @@
+module.exports = {
+  "2-2-1": [
+    { position: "ATT", row: 1, col: 2 },
+    { position: "MID1", row: 2, col: 1 },
+    { position: "MID2", row: 2, col: 3 },
+    { position: "DEF1", row: 3, col: 1 },
+    { position: "DEF2", row: 3, col: 3 },
+    { position: "GK", row: 4, col: 2 },
+  ],
+  "2-1-2": [
+    { position: "ATT1", row: 1, col: 1 },
+    { position: "ATT2", row: 1, col: 3 },
+    { position: "MID", row: 2, col: 2 },
+    { position: "DEF1", row: 3, col: 1 },
+    { position: "DEF2", row: 3, col: 3 },
+    { position: "GK", row: 4, col: 2 },
+  ],
+  "1-2-2": [
+    { position: "ATT1", row: 1, col: 1 },
+    { position: "ATT2", row: 1, col: 3 },
+    { position: "MID1", row: 2, col: 1 },
+    { position: "MID2", row: 2, col: 3 },
+    { position: "DEF", row: 3, col: 2 },
+    { position: "GK", row: 4, col: 2 },
+  ],
+  "3-2": [
+    { position: "ATT", row: 1, col: 2 },
+    { position: "MID", row: 2, col: 2 },
+    { position: "DEF1", row: 3, col: 1 },
+    { position: "DEF2", row: 3, col: 2 },
+    { position: "DEF3", row: 3, col: 3 },
+    { position: "GK", row: 4, col: 2 },
+  ],
+  "1-3-1": [
+    { position: "ATT", row: 1, col: 2 },
+    { position: "MID1", row: 2, col: 1 },
+    { position: "MID2", row: 2, col: 2 },
+    { position: "MID3", row: 2, col: 3 },
+    { position: "DEF", row: 3, col: 2 },
+    { position: "GK", row: 4, col: 2 },
+  ],
+  "box": [
+    { position: "ATT1", row: 1, col: 1 },
+    { position: "ATT2", row: 1, col: 3 },
+    { position: "MID1", row: 2, col: 2 },
+    { position: "DEF1", row: 3, col: 1 },
+    { position: "DEF2", row: 3, col: 3 },
+    { position: "GK", row: 4, col: 2 },
+  ]
+};

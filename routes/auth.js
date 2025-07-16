@@ -2,20 +2,20 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
-// GET register form
+// Render register page
 router.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: null });
 });
 
-// POST register
+// Handle register POST
 router.post('/register', async (req, res) => {
   try {
-    let email = req.body.email?.trim().toLowerCase();
-let password = req.body.password;
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
 
-
-    // Basic validation
     if (!email || !password) {
       return res.render('register', {
         title: 'Register',
@@ -23,9 +23,6 @@ let password = req.body.password;
       });
     }
 
-
-
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.render('register', {
@@ -34,16 +31,46 @@ let password = req.body.password;
       });
     }
 
-    // Hash password and save
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
+    const token = crypto.randomBytes(32).toString('hex');
+
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+      verificationToken: token,
+      isVerified: false,
+    });
+
     await newUser.save();
 
-    // Set session and redirect
-    req.session.user = { id: newUser._id, email: newUser.email };
-    res.redirect('/');
+    // Send verification email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'yybouz1802@gmail.com',
+        pass: 'tsqn zvte hmgo nine',   // ✅ Use Gmail App Password (NOT your real password!)
+      },
+    });
+
+    const verifyUrl = `http://${req.headers.host}/verify-email?token=${token}`;
+
+    await transporter.sendMail({
+      from: '"ST Ballon d\'Or" <yourgmail@gmail.com>',
+      to: email,
+      subject: 'Verify Your Email',
+      html: `
+        <h3>Welcome to ST Ballon d'Or</h3>
+        <p>Please verify your email by clicking the link below:</p>
+        <a href="${verifyUrl}" target="_blank" style="color: #facc15;">Verify Email</a>
+      `,
+    });
+
+    res.render('login', {
+      title: 'Login',
+      error: 'Verification email sent. Please check your inbox.',
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Registration error:', err);
     res.render('register', {
       title: 'Register',
       error: 'Something went wrong. Please try again.',
@@ -51,12 +78,12 @@ let password = req.body.password;
   }
 });
 
-// GET login form
+// Render login page
 router.get('/login', (req, res) => {
   res.render('login', { title: 'Login', error: null });
 });
 
-// POST login
+// Handle login POST
 router.post('/login', async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
@@ -71,16 +98,21 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      // User not found
       return res.render('login', {
         title: 'Login',
         error: 'No account found with this email.',
       });
     }
 
+    if (!user.isVerified) {
+      return res.render('login', {
+        title: 'Login',
+        error: 'Please verify your email before logging in.',
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      // Password does not match
       return res.render('login', {
         title: 'Login',
         error: 'Incorrect password.',
@@ -88,9 +120,10 @@ router.post('/login', async (req, res) => {
     }
 
     req.session.user = { id: user._id, email: user.email };
+
     res.redirect('/');
   } catch (err) {
-    console.error(err);
+    console.error('Login error:', err);
     res.render('login', {
       title: 'Login',
       error: 'Something went wrong. Please try again.',
@@ -98,40 +131,65 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET logout
+// Logout route
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
-    if (err) {
-      console.error('Error destroying session:', err);
-    }
+    if (err) console.error('Session destroy error:', err);
     res.redirect('/login');
   });
 });
+
+// Admin: View all users
 router.get('/users', async (req, res) => {
   try {
-    // Optionally, restrict this route to admin users only
     if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
       return res.status(403).send('Access denied');
     }
     const users = await User.find({}, 'email _id');
     res.render('users', { title: 'All Users', users });
   } catch (err) {
-    console.error(err);
+    console.error('Fetch users error:', err);
     res.status(500).send('Error fetching users');
   }
 });
 
-// Delete user by ID (admin only)
+// Admin: Delete a user
 router.post('/delete-user/:id', async (req, res) => {
   try {
     if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
       return res.status(403).send('Access denied');
     }
-    await User.findByIdAndDelete(req.params.id);
+
+    await User.findByIdAndDelete(req.params.id); 
     res.redirect('/users');
   } catch (err) {
-    console.error(err);
+    console.error('Delete user error:', err);
     res.status(500).send('Error deleting user');
   }
 });
+
+// Verify email route
+router.get('/verify-email', async (req, res) => {
+  try {
+    const user = await User.findOne({ verificationToken: req.query.token });
+
+    if (!user) {
+      return res.send('Invalid or expired verification link.');
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    // ✅ Automatically log in the user
+    req.session.user = { id: user._id, email: user.email };
+
+  
+    res.redirect('/');
+  } catch (err) {
+    console.error(err);
+    res.send('Something went wrong.');
+  }
+});
+
 module.exports = router;
