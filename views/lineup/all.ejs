@@ -42,7 +42,9 @@
         <ul class="space-y-2 mb-4">
           <% lineup.comments.forEach(c => { %>
             <li class="bg-gray-800 px-3 py-2 rounded text-sm break-words">
-              <span class="text-yellow-200 font-semibold"><%= c.user.email %>:</span>
+              <span class="text-yellow-200 font-semibold">
+                <%= c.user ? c.user.email : 'Unknown User' %>:
+              </span>
               <span class="text-white ml-1"><%= c.text %></span>
             </li>
           <% }) %>
