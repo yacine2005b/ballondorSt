@@ -5,6 +5,7 @@
     <thead>
       <tr class="text-yellow-300 border-b border-yellow-500">
         <th class="py-3 px-4">Email</th>
+        <th class="py-3 px-4">Verified</th>
         <th class="py-3 px-4">Action</th>
       </tr>
     </thead>
@@ -12,6 +13,13 @@
       <% users.forEach(user => { %>
         <tr class="border-b border-gray-700">
           <td class="py-3 px-4"><%= user.email %></td>
+          <td class="py-3 px-4">
+            <% if (user.isVerified) { %>
+              <span class="text-green-400 font-semibold">Yes</span>
+            <% } else { %>
+              <span class="text-red-400 font-semibold">No</span>
+            <% } %>
+          </td>
           <td class="py-3 px-4">
             <form method="POST" action="/delete-user/<%= user._id %>" onsubmit="return confirm('Delete this user?');">
               <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>

@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema({
 // Cascade delete related data (votes + lineups)
 userSchema.post('findOneAndDelete', async function (doc) {
   if (doc) {
-    const Vote = require('../models/vote');
-    const Lineup = require('../models/lineup');
+    const Vote = require('./vote');
+    const Lineup = require('./lineup');
 
     await Vote.deleteMany({ user: doc._id });
     await Lineup.deleteMany({ user: doc._id });

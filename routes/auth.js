@@ -142,10 +142,11 @@ router.get('/logout', (req, res) => {
 // Admin: View all users
 router.get('/users', async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
+    const allowedAdmins = ['ybouziane144@gmail.com', 'raoufammari213@gmail.com'];
+    if (!req.session.user || !allowedAdmins.includes(req.session.user.email)) {
       return res.status(403).send('Access denied');
     }
-    const users = await User.find({}, 'email _id');
+    const users = await User.find({}, 'email _id isVerified');
     res.render('users', { title: 'All Users', users });
   } catch (err) {
     console.error('Fetch users error:', err);
@@ -156,7 +157,8 @@ router.get('/users', async (req, res) => {
 // Admin: Delete a user
 router.post('/delete-user/:id', async (req, res) => {
   try {
-    if (!req.session.user || req.session.user.email !== 'yacine@gmail.com') {
+    const allowedAdmins = ['ybouziane144@gmail.com'];
+    if (!req.session.user || !allowedAdmins.includes(req.session.user.email)) {
       return res.status(403).send('Access denied');
     }
 

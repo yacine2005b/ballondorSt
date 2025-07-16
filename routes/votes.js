@@ -143,14 +143,21 @@ router.get('/leaderboard', requireLogin, async (req, res) => {
   }
 });
 
-// 📃 GET votes summary (admin-like view)
+// 📃 GET votes summary
 router.get('/votes-summary', requireLogin, async (req, res) => {
   try {
+    const allowedAdmins = ['ybouziane144@gmail.com', 'raoufammari213@gmail.com'];
+    if (!req.session.user || !allowedAdmins.includes(req.session.user.email)) {
+      return res.status(403).send('Access denied');
+    }
+
     const votes = await Vote.find().populate('user', 'email');
+    // Only include votes where user exists
+    const filteredVotes = votes.filter(vote => vote.user);
 
     res.render('votes-summary', {
       title: 'Votes Summary',
-      votes,
+      votes: filteredVotes,
       currentUser: req.session.user,
     });
   } catch (err) {
