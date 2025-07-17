@@ -8,13 +8,17 @@ require('dotenv').config();
 
 const rateLimit = require('express-rate-limit');
 
-// Limit to 1 registration per minute per IP
+
 const registerLimiter = rateLimit({
  windowMs: 3 * 60 * 1000,
+ max: 2,
   message: "Too many accounts created from this IP, please wait 30 min.",
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+
+
 // Render register page
 router.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: null });
