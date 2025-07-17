@@ -39,16 +39,35 @@
       <!-- Comments Section -->
       <div class="mt-4">
         <h3 class="text-yellow-300 font-bold mb-3 text-lg">Comments</h3>
-        <ul class="space-y-2 mb-4">
-          <% lineup.comments.forEach(c => { %>
-            <li class="bg-gray-800 px-3 py-2 rounded text-sm break-words">
-              <span class="text-yellow-200 font-semibold">
-                <%= c.user ? c.user.email : 'Unknown User' %>:
-              </span>
-              <span class="text-white ml-1"><%= c.text %></span>
-            </li>
-          <% }) %>
-        </ul>
+<ul class="space-y-2 mb-4">
+  <% lineup.comments.forEach(c => { %>
+    <li class="flex justify-between items-start text-sm px-2 py-1" data-comment-id="<%= c._id %>">
+      <!-- Left: User & Comment -->
+      <div class="flex flex-col">
+        <span class="text-white">
+          <span class="font-semibold text-yellow-200"><%= c.user ? c.user.email : 'Unknown' %></span>
+          <span class="ml-1"><%= c.text %></span>
+        </span>
+        <span class="text-gray-400 text-xs mt-1">
+          ❤️ <span class="like-count" id="like-count-<%= c._id %>"><%= c.likes?.length || 0 %></span> likes
+        </span>
+      </div>
+
+      <!-- Right: Heart button -->
+      <% if (currentUser) { %>
+        <button 
+          type="button"
+          class="text-white hover:text-red-500 transition-colors like-button"
+          data-lineup-id="<%= lineup._id %>"
+          data-comment-id="<%= c._id %>">
+          ❤️
+        </button>
+      <% } %>
+    </li>
+  <% }) %>
+</ul>
+
+
 
         <% if (currentUser) { %>
           <form method="POST" action="/lineup/<%= lineup._id %>/comments" class="flex flex-col sm:flex-row gap-3">
@@ -64,3 +83,29 @@
     </div>
   <% }) %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const commentId = button.dataset.commentId;
+      const lineupId = button.dataset.lineupId;
+
+      try {
+        const res = await fetch(`/lineup/${lineupId}/comments/${commentId}/like`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin' 
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById(`like-count-${commentId}`).innerText = `❤️ ${data.totalLikes}`;
+        }
+      } catch (err) {
+        console.error('Error liking comment:', err);
+      }
+    });
+  });
+});
+</script>

@@ -6,13 +6,22 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 require('dotenv').config(); 
 
+const rateLimit = require('express-rate-limit');
+
+// Limit to 1 registration per minute per IP
+const registerLimiter = rateLimit({
+ windowMs: 3 * 60 * 1000,
+  message: "Too many accounts created from this IP, please wait 30 min.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 // Render register page
 router.get('/register', (req, res) => {
   res.render('register', { title: 'Register', error: null });
 });
 
 // Handle register POST
-router.post('/register', async (req, res) => {
+router.post('/register', registerLimiter, async (req, res) => {
   try {
     const email = req.body.email?.trim().toLowerCase();
     const password = req.body.password;

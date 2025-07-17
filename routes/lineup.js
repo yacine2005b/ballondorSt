@@ -133,6 +133,29 @@ router.post('/:id/comments', async (req, res) => {
    
   res.redirect('/lineup/all');
 });
+// POST like comment
+router.post('/:lineupId/comments/:commentId/like', async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
+  const { lineupId, commentId } = req.params;
+  const userId = req.session.user.id;
+
+  const lineup = await Lineup.findById(lineupId);
+  if (!lineup) return res.status(404).json({ error: 'Lineup not found' });
+
+  const comment = lineup.comments.id(commentId);
+  if (!comment) return res.status(404).json({ error: 'Comment not found' });
+
+  const alreadyLiked = comment.likes.some(id => id.toString() === userId.toString());
+  if (!alreadyLiked) {
+    comment.likes.push(userId);
+  } else {
+    comment.likes = comment.likes.filter(id => id.toString() !== userId.toString());
+  }
+
+  await lineup.save();
+
+  res.json({ totalLikes: comment.likes.length });
+});
 
 router.get('/all', async (req, res) => {
   try {
