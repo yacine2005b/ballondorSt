@@ -56,7 +56,7 @@ router.post('/register', async (req, res) => {
     const verifyUrl = `http://${req.headers.host}/verify-email?token=${token}`;
 
     await transporter.sendMail({
-      from: '"ST Ballon d\'Or" <yourgmail@gmail.com>',
+      from: "ST Ballon d\'Or", 
       to: email,
       subject: 'Verify Your Email',
       html: `
