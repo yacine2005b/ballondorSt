@@ -4,6 +4,7 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+require('dotenv').config(); 
 
 // Render register page
 router.get('/register', (req, res) => {
@@ -48,7 +49,7 @@ router.post('/register', async (req, res) => {
       service: 'gmail',
       auth: {
         user: 'yybouz1802@gmail.com',
-        pass: 'tsqn zvte hmgo nine',   // ✅ Use Gmail App Password (NOT your real password!)
+        pass: process.env.APP_PASS,  
       },
     });
 
